@@ -1,0 +1,7 @@
+#folders
+.idea/
+node_modules/
+bower_components/
+vendor/
+
+#files
