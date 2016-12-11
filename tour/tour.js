@@ -1,15 +1,12 @@
-var tourS2 = (function () {
+var tour = (function () {
     'use strict';
 
-    var config = {};
+    var box;
+    var overlay;
     var steps = [];
     var currStep = 0;
 
-    var overlay;
-    var box;
-
     function init() {
-
         getSteps();
         createStep();
         createOverlay();
@@ -130,4 +127,4 @@ var tourS2 = (function () {
     }
 })();
 
-tourS2.init();
+tour.init();
