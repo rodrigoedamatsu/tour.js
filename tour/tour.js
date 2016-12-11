@@ -40,7 +40,7 @@ var tourS2 = (function () {
 
     function createBox() {
         box = document.createElement('div');
-        box.classList.add('tourS2-box');
+        box.classList.add('tour-box');
 
         document.body.appendChild(box);
 
@@ -53,7 +53,7 @@ var tourS2 = (function () {
 
     function createMessage() {
         var message = document.createElement('div');
-        message.classList.add('tourS2-message', 'center');
+        message.classList.add('tour-message', 'center');
         message.textContent = steps[currStep].message;
 
         box.appendChild(message);
@@ -61,7 +61,7 @@ var tourS2 = (function () {
 
     function createActions() {
         var action = document.createElement('div');
-        action.classList.add('tourS2-action', 'center');
+        action.classList.add('tour-action', 'center');
         box.appendChild(action);
 
         createButtons(action);

@@ -1,4 +1,4 @@
-.tourS2-box {
+.tour-box {
     display: block;
     position: absolute;
     width: 350px;
@@ -11,14 +11,14 @@
     font-family: Calibri, Arial, SansSerif;
 }
 
-.tourS2-message {
+.tour-message {
     padding: 10px 0;
     width: 100%;
 
     text-align: center;
 }
 
-.tourS2-action {
+.tour-action {
     text-align: center;
 }
 
@@ -27,7 +27,7 @@
     width: 50%;
 }
 
-.tourS2-overlay {
+.tour-overlay {
     width: 100%;
     height: 100%;
 
