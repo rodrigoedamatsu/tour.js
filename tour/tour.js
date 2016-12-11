@@ -42,7 +42,10 @@ var tour = (function () {
         document.body.appendChild(box);
 
         var ref = steps[currStep].ref;
-        ref.style.position = 'relative';
+
+        if (ref.style.position !== 'absolute') {
+            ref.style.position = 'relative';
+        }
 
         box.style.left = (ref.offsetLeft + ref.offsetWidth + 10) + 'px';
         box.style.top = ref.offsetTop + 'px';
@@ -87,7 +90,10 @@ var tour = (function () {
     }
 
     function removeStep() {
-        steps[currStep].ref.style.position = 'initial';
+        if (steps[currStep].ref.style.position !== 'absolute') {
+            steps[currStep].ref.style.position = 'initial';
+        }
+
         box.parentNode.removeChild(box);
     }
 
@@ -126,5 +132,3 @@ var tour = (function () {
         init: init
     }
 })();
-
-tour.init();
