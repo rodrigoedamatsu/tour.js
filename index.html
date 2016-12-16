@@ -10,25 +10,28 @@
     <link rel="stylesheet" href="tour/tour.css">
 </head>
 <style>
+    body {
+        color: #777;
+    }
     .box {
         width: 100px;
         padding: 10px 5px;
-        background: #ccccaa;
+        background: #FFFBFA;
     }
 </style>
 <body>
 
-<div id="first" class="box" data-step="1" data-message="Etapa 1">
+<div id="first" class="box" data-step="1" data-message="Etapa 1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi gravida libero nec velit. Morbi scelerisque luctus velit. Etiam dui sem,">
     Primeiro passo
 </div>
-<div id="second" class="box" data-step="2" data-message="Etapa 2">
+<div id="second" class="box" data-step="2" data-message="Etapa 2 - Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie,">
     Segundo passo
 </div>
-<div id="third" class="box" data-step="3" data-message="Etapa 3">
+<div id="third" class="box" data-step="3" data-message="Etapa 3 - Morbi a metus. Phasellus enim erat, vestibulum vel, aliquam a,">
     Terceiro passo
 </div>
 
-<div id="fourth" class="box" data-step="4" data-message="Etapa 4" style="position: absolute; left: 300px; top: 300px">
+<div id="fourth" class="box" data-step="4" data-message="Etapa 4 - In sem justo, commodo ut, suscipit at, pharetra vitae, orci. Duis sapien nunc," data-position="bottom" style="position: absolute; left: 300px; top: 300px">
     Quarto passo
 </div>
 
@@ -36,7 +39,13 @@
 
 <script>
     window.onload = function () {
-        tour.init();
+        tour.init([
+            {
+                step: 5,
+                message: '<strong>Etapa 5</strong> - Aenean placerat. In vulputate urna eu arcu. Aliquam erat volutpat. Suspendisse potenti. Morbi mattis felis at nunc. Duis viverra diam non justo. In nisl. Nullam sit amet magna in magna gravida vehicula. Mauris tincidunt sem sed arcu. Nunc posuere. Nullam lectus justo,',
+                ref: '#fourth'
+            }
+        ]);
     }
 </script>
 

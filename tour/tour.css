@@ -4,27 +4,67 @@
     width: 350px;
     padding: 10px;
 
-    box-shadow: 1px 1px 2px #999;
-
     background-color: #ffffff;
 
-    font-family: Calibri, Arial, SansSerif;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+
+    animation: show .5s ease-in-out;
+    transition: all .5s ease;
+
+    font-family: ‘Lucida Sans Unicode’, ‘Lucida Grande’, sans-serif;
+    color: #777;
 }
 
-.tour-message {
-    padding: 10px 0;
-    width: 100%;
+@keyframes show {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(-20%);
+        transform: translateY(-20%);
 
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0%);
+        transform: translateY(0%);
+    }
+}
+
+
+
+.tour-message {
+    padding: 20px 0;
     text-align: center;
 }
 
 .tour-action {
-    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+.tour-action > button {
+    float: left;
+    width: 50%;
+    padding: 10px 5px;
+    border: 1px solid #d3dce6;
+    background-color: #fff;
+
+    cursor: pointer;
+    color: #9facbd;
+
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.tour-action > button:hover {
+    color: #777;
+    border: 1px solid #ccc;
 }
 
 .center {
     margin: auto;
-    width: 50%;
 }
 
 .tour-overlay {
