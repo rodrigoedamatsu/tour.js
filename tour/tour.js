@@ -170,6 +170,7 @@ var Tour = (function () {
             var elemVideo = document.createElement('video');
             elemVideo.src = video;
             elemVideo.autoplay = true;
+            elemVideo.controls = true;
 
             resource.appendChild(elemVideo);
         }

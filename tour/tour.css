@@ -88,10 +88,6 @@
     border: 1px solid #ccc;
 }
 
-.center {
-    margin: auto;
-}
-
 .tour-overlay {
     position: fixed;
     top: 0;
@@ -101,4 +97,15 @@
     z-index: 900;
 
     background-color: rgba(0, 0, 0, 0.8);
+
+    animation: overlay .5s linear;
+}
+
+@keyframes overlay {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
