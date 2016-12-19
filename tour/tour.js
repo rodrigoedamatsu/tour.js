@@ -1,19 +1,45 @@
-var tour = (function () {
+/**
+ * @module Tour
+ * A tour.js é uma lib open source sem dependências externas, que nasceu da necessidade de guiar o usuário
+ * por uma solução web complexa explicando-a como funciona, porém com o desafio
+ * e a necessidade de ter recursos para ser acessível aos surdos.
+ *
+ * @author rodrigoedamatsu@gmail.com
+ */
+var Tour = (function () {
     'use strict';
 
+    /**
+     * @typedef     {Object}            TourStepModel
+     * @property    {Number}            step
+     * @property    {String}            message
+     * @property    {String}            ref
+     * @property    {String}            [position=left]
+     * @property    {String}            [image]
+     * @property    {String}            [video]
+     * @property    {String}            [color]
+     * @property    {String}            [fontColor]
+     */
+
+        // HTMLElements
     var box;
     var content;
+    var resource;
+    var btnClose;
     var action;
-
     var overlay;
+
     var steps = [];
-    var custom = [];
+    var config = [];
     var currStep = 0;
 
-    function init(_custom) {
+    /**
+     * @param       {TourStepModel[]}   _config
+     */
+    function init(_config) {
 
-        if (_custom && Array.isArray(_custom)) {
-            custom = _custom;
+        if (_config && Array.isArray(_config)) {
+            config = _config;
         }
 
         getSteps();
@@ -40,6 +66,7 @@ var tour = (function () {
             message: _elem.getAttribute('data-message'),
             position: _elem.getAttribute('data-position') || 'right',
             video: _elem.getAttribute('data-video'),
+            image: _elem.getAttribute('data-image'),
             color: _elem.getAttribute('data-color'),
             fontColor: _elem.getAttribute('data-font-color'),
             ref: _elem
@@ -49,31 +76,33 @@ var tour = (function () {
     // TODO: OTIMIZAR
     function insertCustomConfig() {
 
-        for (var i = 0, len = custom.length; i < len; i++) {
+        for (var i = 0, len = config.length; i < len; i++) {
 
             var step = steps.find(function (model) {
-                return model.step === custom[i].step;
+                return model.step === config[i].step;
             });
 
+            // reconfigura etapa existente
             if (step) {
 
-                step.message = custom[i].message || step.message;
-                step.position = custom[i].position || step.position;
-                step.video = custom[i].video || step.video;
-                step.ref = document.querySelector(custom[i].ref) || step.ref;
-                step.color = custom[i].color || step.color;
-                step.fontColor = custom[i].fontColor || step.fontColor;
+                step.message = config[i].message || step.message;
+                step.position = config[i].position || step.position;
+                step.video = config[i].video || step.video;
+                step.ref = document.querySelector(config[i].ref) || step.ref;
+                step.color = config[i].color || step.color;
+                step.fontColor = config[i].fontColor || step.fontColor;
 
+                // cria nova etapa
             } else {
 
                 steps.push({
-                    step: custom[i].step,
-                    message: custom[i].message,
-                    position: custom[i].position || 'right',
-                    video: custom[i].video,
-                    color: custom[i].color,
-                    fontColor: custom[i].fontColor,
-                    ref: document.querySelector(custom[i].ref) || step.ref
+                    step: config[i].step,
+                    message: config[i].message,
+                    position: config[i].position || 'right',
+                    video: config[i].video,
+                    color: config[i].color,
+                    fontColor: config[i].fontColor,
+                    ref: document.querySelector(config[i].ref) || step.ref
                 })
             }
         }
@@ -85,66 +114,78 @@ var tour = (function () {
 
     function createStep() {
         createBox();
+        createResource();
         createContent();
-        createVideo();
         createActions();
         setPosition();
     }
 
     function createBox() {
-
         box = document.createElement('div');
         box.classList.add('tour-box');
         box.style.backgroundColor = steps[currStep].color || '';
 
         document.body.appendChild(box);
+
+        createCloseButton();
     }
 
-    function setPosition() {
+    function createCloseButton() {
+        btnClose = document.createElement('button');
+        btnClose.classList.add('tour-close');
+        btnClose.textContent = 'X';
 
-        var ref = steps[currStep].ref;
-        var left = 0;
-        var top = 0;
-        var offset = 10;
+        box.appendChild(btnClose);
 
-        if (ref.style.position !== 'absolute') {
-            ref.style.position = 'relative';
-        }
-
-        if (steps[currStep].position === 'right') {
-
-            left = (ref.offsetLeft + ref.offsetWidth + offset);
-            top = ref.offsetTop;
-
-        } else if (steps[currStep].position === 'left') {
-
-            left = (ref.offsetLeft - box.offsetWidth - offset);
-            top = ref.offsetTop;
-
-        } else if (steps[currStep].position === 'top') {
-
-            left = ref.offsetLeft;
-            top = ref.offsetTop - (box.offsetHeight + offset);
-
-        } else if (steps[currStep].position === 'bottom') {
-
-            left = ref.offsetLeft;
-            top = ref.offsetTop + ref.offsetHeight + offset;
-        }
-
-        box.style.left = left + 'px';
-        box.style.top = top + 'px';
+        btnClose.addEventListener('mousedown', closeTour);
     }
 
     function createContent() {
         content = document.createElement('div');
-        content.classList.add('tour-message', 'center');
+        content.classList.add('tour-message');
         content.innerHTML = steps[currStep].message;
-
         content.style.color = steps[currStep].fontColor || '';
 
-
         box.appendChild(content);
+    }
+
+    function createResource() {
+        if (steps[currStep].video || steps[currStep].image) {
+
+            resource = document.createElement('div');
+            resource.classList.add('tour-resource');
+
+            box.appendChild(resource);
+
+            createImage();
+            createVideo();
+        }
+    }
+
+    function createVideo() {
+        var video = steps[currStep].video;
+
+        if (video) {
+
+            var elemVideo = document.createElement('video');
+            elemVideo.src = video;
+            elemVideo.autoplay = true;
+
+            resource.appendChild(elemVideo);
+        }
+    }
+
+    function createImage() {
+
+        var image = steps[currStep].image;
+
+        if (image) {
+
+            var elemImage = document.createElement('img');
+            elemImage.src = image;
+
+            resource.appendChild(elemImage);
+        }
     }
 
     function createActions() {
@@ -177,10 +218,66 @@ var tour = (function () {
         btnNext.addEventListener('mousedown', nextStep);
     }
 
+    function createOverlay() {
+        overlay = document.createElement('div');
+        overlay.classList.add('tour-overlay');
+
+        document.body.insertBefore(overlay, document.body.firstChild);
+    }
+
+    function removeOverlay() {
+        if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    }
+
+    function setPosition() {
+
+        var ref = steps[currStep].ref;
+        var top = 0;
+        var left = 0;
+        var offset = 10;
+
+        if (ref.style.position !== 'absolute') {
+            ref.style.position = 'relative';
+        }
+
+        if (steps[currStep].position === 'right') {
+
+            left = (ref.offsetLeft + ref.offsetWidth + offset);
+            top = ref.offsetTop;
+
+        } else if (steps[currStep].position === 'left') {
+
+            left = (ref.offsetLeft - box.offsetWidth - offset);
+            top = ref.offsetTop;
+
+        } else if (steps[currStep].position === 'top') {
+
+            left = ref.offsetLeft;
+            top = ref.offsetTop - (box.offsetHeight + offset);
+
+        } else if (steps[currStep].position === 'bottom') {
+
+            left = ref.offsetLeft;
+            top = ref.offsetTop + ref.offsetHeight + offset;
+        }
+
+        box.style.left = left + 'px';
+        box.style.top = top + 'px';
+
+        box.style.zIndex = 991;
+        ref.style.zIndex = 991;
+
+        document.body.scrollTop = ref.offsetTop;
+    }
+
     function removeStep() {
         if (steps[currStep].ref.style.position !== 'absolute') {
             steps[currStep].ref.style.position = 'initial';
         }
+
+        steps[currStep].ref.style.zIndex = '';
 
         box.parentNode.removeChild(box);
     }
@@ -203,35 +300,16 @@ var tour = (function () {
         }
     }
 
-    function createVideo() {
-
-        var video = steps[currStep].video;
-
-        if (video) {
-
-            var elemVideo = document.createElement('video');
-            elemVideo.width = '100%';
-            elemVideo.height = '100%';
-            elemVideo.src = video;
-
-            content.appendChild(elemVideo);
-        }
-    }
-
-    function createOverlay() {
-
-        overlay = document.createElement('div');
-        overlay.style.position = 'absolute';
-        overlay.style.top = 0;
-        overlay.style.bottom = 0;
-        overlay.style.left = 0;
-        overlay.style.right = 0;
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-
-        document.body.insertBefore(overlay, document.body.firstChild);
+    function closeTour() {
+        removeStep();
+        removeOverlay();
+        steps = [];
+        currStep = 0;
     }
 
     return {
-        init: init
+        init: init,
+        next: nextStep(),
+        back: backStep()
     }
 })();

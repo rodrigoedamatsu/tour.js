@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Tour.js</title>
 
     <link rel="stylesheet" href="tour/tour.css">
 </head>
@@ -13,6 +13,7 @@
     body {
         color: #777;
     }
+
     .box {
         width: 100px;
         padding: 10px 5px;
@@ -21,17 +22,27 @@
 </style>
 <body>
 
-<div id="first" class="box" data-step="1" data-message="Etapa 1 - Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi gravida libero nec velit. Morbi scelerisque luctus velit. Etiam dui sem,">
+<div id="first" class="box" data-step="1"
+     data-message="Com tour.js você é capaz de criar um guia pela sua solução web de maneira muito simples.">
     Primeiro passo
 </div>
-<div id="second" class="box" data-step="2" data-message="Etapa 2 - Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie,">
+<div id="second" class="box" data-step="2" data-message="Além de ser possível inserir imagens para facilitar o tour"
+     data-image="resource/image-1.jpg">
     Segundo passo
 </div>
-<div id="third" class="box" data-step="3" data-message="Etapa 3 - Morbi a metus. Phasellus enim erat, vestibulum vel, aliquam a,">
+<div id="third" class="box" data-step="3"
+     data-message="Ou até mesmo video, o que facilita a explicação de coisas mais complexas"
+     data-video="resource/video-1.mp4">
     Terceiro passo
 </div>
 
-<div id="fourth" class="box" data-step="4" data-message="Etapa 4 - In sem justo, commodo ut, suscipit at, pharetra vitae, orci. Duis sapien nunc," data-position="bottom" style="position: absolute; left: 300px; top: 300px">
+<div id="fourth" class="box" data-step="4"
+     data-message="Com data-position no elemento é possível posicionar a mensagem em diferentes posições"
+     data-position="bottom" style="position: absolute; left: 300px; top: 300px">
+    Quarto passo
+</div>
+
+<div id="sixth" class="box" style="position: absolute; left: 1000px; top: 500px">
     Quarto passo
 </div>
 
@@ -39,11 +50,12 @@
 
 <script>
     window.onload = function () {
-        tour.init([
+        Tour.init([
             {
                 step: 5,
                 message: '<strong>Etapa 5</strong> - Aenean placerat. In vulputate urna eu arcu. Aliquam erat volutpat. Suspendisse potenti. Morbi mattis felis at nunc. Duis viverra diam non justo. In nisl. Nullam sit amet magna in magna gravida vehicula. Mauris tincidunt sem sed arcu. Nunc posuere. Nullam lectus justo,',
-                ref: '#fourth'
+                ref: '#sixth',
+                color: 'black'
             }
         ]);
     }
