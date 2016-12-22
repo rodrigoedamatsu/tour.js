@@ -47,6 +47,8 @@ var Tour = (function () {
      */
     function init(_config) {
 
+        _config = _config || {};
+
         config = {
             btnBack: _config.btnBack || 'Voltar',
             btnNext: _config.btnNext || 'Avançar',
