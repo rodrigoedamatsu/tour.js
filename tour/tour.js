@@ -29,22 +29,44 @@ var Tour = (function () {
     var action;
     var overlay;
 
+    // controllers
     var steps = [];
-    var config = [];
     var currStep = 0;
+    var cacheZIndex = 0;
+
+    var config = {
+        btnBack: 'Voltar',
+        btnNext: 'Avançar',
+        defaultPosition: 'right',
+
+        steps: []
+    };
 
     /**
-     * @param       {TourStepModel[]}   _config
+     * @param       _config
      */
     function init(_config) {
 
-        if (_config && Array.isArray(_config)) {
-            config = _config;
-        }
+        config = {
+            btnBack: _config.btnBack || 'Voltar',
+            btnNext: _config.btnNext || 'Avançar',
+            defaultPosition: _config.defaultPosition || 'right',
+            backdrop: _config.hasOwnProperty('backdrop') ? _config.backdrop : true,
+            zIndex: 99999,
+            steps: _config.steps || [],
+
+            template: '<button class="tour-close">X</button>' +
+            '<div class="tour-resource"></div>' +
+            '<div class="tour-message"></div><' +
+            'div class="tour-action">' +
+            '<button class="tour-step-back"></button>' +
+            '<button class="tour-step-next"></button>' +
+            '</div>'
+        };
 
         getSteps();
         createStep();
-        createOverlay();
+        createBackdrop();
     }
 
     function getSteps() {
@@ -52,60 +74,19 @@ var Tour = (function () {
         var elements = document.querySelectorAll('[data-step]');
 
         for (var i = 0, len = elements.length; i < len; i++) {
-            steps.push(prepareModel(elements[i]));
-        }
-
-        insertCustomConfig();
-
-        steps.sort(sortByStep);
-    }
-
-    function prepareModel(_elem) {
-        return {
-            step: parseInt(_elem.getAttribute('data-step')),
-            message: _elem.getAttribute('data-message'),
-            position: _elem.getAttribute('data-position') || 'right',
-            video: _elem.getAttribute('data-video'),
-            image: _elem.getAttribute('data-image'),
-            color: _elem.getAttribute('data-color'),
-            fontColor: _elem.getAttribute('data-font-color'),
-            ref: _elem
-        }
-    }
-
-    // TODO: OTIMIZAR
-    function insertCustomConfig() {
-
-        for (var i = 0, len = config.length; i < len; i++) {
-
-            var step = steps.find(function (model) {
-                return model.step === config[i].step;
+            config.steps.push({
+                step: parseInt(elements[i].getAttribute('data-step')),
+                message: elements[i].getAttribute('data-message'),
+                position: elements[i].getAttribute('data-position'),
+                video: elements[i].getAttribute('data-video'),
+                image: elements[i].getAttribute('data-image'),
+                color: elements[i].getAttribute('data-color'),
+                fontColor: elements[i].getAttribute('data-font-color'),
+                ref: elements[i]
             });
-
-            // reconfigura etapa existente
-            if (step) {
-
-                step.message = config[i].message || step.message;
-                step.position = config[i].position || step.position;
-                step.video = config[i].video || step.video;
-                step.ref = document.querySelector(config[i].ref) || step.ref;
-                step.color = config[i].color || step.color;
-                step.fontColor = config[i].fontColor || step.fontColor;
-
-                // cria nova etapa
-            } else {
-
-                steps.push({
-                    step: config[i].step,
-                    message: config[i].message,
-                    position: config[i].position || 'right',
-                    video: config[i].video,
-                    color: config[i].color,
-                    fontColor: config[i].fontColor,
-                    ref: document.querySelector(config[i].ref) || step.ref
-                })
-            }
         }
+
+        config.steps.sort(sortByStep);
     }
 
     function sortByStep(a, b) {
@@ -114,56 +95,50 @@ var Tour = (function () {
 
     function createStep() {
         createBox();
-        createResource();
-        createContent();
-        createActions();
         setPosition();
     }
 
     function createBox() {
         box = document.createElement('div');
         box.classList.add('tour-box');
-        box.style.backgroundColor = steps[currStep].color || '';
+        box.style.backgroundColor = config.steps[currStep].color || '';
+        box.innerHTML = config.template;
 
-        document.body.appendChild(box);
+        if (typeof config.steps[currStep].ref === 'string') {
+            config.steps[currStep].ref = document.querySelector(config.steps[currStep].ref);
+        }
 
-        createCloseButton();
+        config.steps[currStep].ref.appendChild(box);
+
+        configCloseButton();
+        setContent();
+        createResource();
+
+        configButtons();
     }
 
-    function createCloseButton() {
-        btnClose = document.createElement('button');
-        btnClose.classList.add('tour-close');
-        btnClose.textContent = 'X';
-
-        box.appendChild(btnClose);
-
+    function configCloseButton() {
+        btnClose = box.getElementsByClassName('tour-close')[0];
         btnClose.addEventListener('mousedown', closeTour);
     }
 
-    function createContent() {
-        content = document.createElement('div');
-        content.classList.add('tour-message');
-        content.innerHTML = steps[currStep].message;
-        content.style.color = steps[currStep].fontColor || '';
-
-        box.appendChild(content);
+    function setContent() {
+        content = box.getElementsByClassName('tour-message')[0];
+        content.innerHTML = config.steps[currStep].message;
+        content.style.color = config.steps[currStep].fontColor || '';
     }
 
     function createResource() {
-        if (steps[currStep].video || steps[currStep].image) {
+        if (config.steps[currStep].video || config.steps[currStep].image) {
 
-            resource = document.createElement('div');
-            resource.classList.add('tour-resource');
-
-            box.appendChild(resource);
-
+            resource = document.getElementsByClassName('tour-resource')[0];
             createImage();
             createVideo();
         }
     }
 
     function createVideo() {
-        var video = steps[currStep].video;
+        var video = config.steps[currStep].video;
 
         if (video) {
 
@@ -177,8 +152,7 @@ var Tour = (function () {
     }
 
     function createImage() {
-
-        var image = steps[currStep].image;
+        var image = config.steps[currStep].image;
 
         if (image) {
 
@@ -189,18 +163,9 @@ var Tour = (function () {
         }
     }
 
-    function createActions() {
-        var action = document.createElement('div');
-        action.classList.add('tour-action');
-        box.appendChild(action);
-
-        createButtons(action);
-    }
-
-    function createButtons(_action) {
-        var btnBack = document.createElement('button');
-        btnBack.textContent = 'Voltar';
-        _action.appendChild(btnBack);
+    function configButtons() {
+        var btnBack = box.getElementsByClassName('tour-step-back')[0];
+        btnBack.textContent = config.btnBack;
 
         if (currStep === 0) {
             btnBack.disabled = true;
@@ -208,9 +173,8 @@ var Tour = (function () {
 
         btnBack.addEventListener('mousedown', backStep);
 
-        var btnNext = document.createElement('button');
-        btnNext.textContent = 'Avançar';
-        _action.appendChild(btnNext);
+        var btnNext = document.getElementsByClassName('tour-step-next')[0];
+        btnNext.textContent = config.btnNext;
 
         if (currStep === steps.length - 1) {
             btnNext.disabled = true;
@@ -219,14 +183,17 @@ var Tour = (function () {
         btnNext.addEventListener('mousedown', nextStep);
     }
 
-    function createOverlay() {
-        overlay = document.createElement('div');
-        overlay.classList.add('tour-overlay');
+    function createBackdrop() {
+        if (config.backdrop) {
+            overlay = document.createElement('div');
+            overlay.classList.add('tour-overlay');
+            overlay.style.zIndex = config.zIndex - 10;
 
-        document.body.insertBefore(overlay, document.body.firstChild);
+            document.body.insertBefore(overlay, document.body.firstChild);
+        }
     }
 
-    function removeOverlay() {
+    function removeBackdrop() {
         if (overlay && overlay.parentNode) {
             overlay.parentNode.removeChild(overlay);
         }
@@ -234,51 +201,41 @@ var Tour = (function () {
 
     function setPosition() {
 
-        var ref = steps[currStep].ref;
+        var ref = config.steps[currStep].ref;
+        var refRect = ref.getBoundingClientRect();
         var top = 0;
         var left = 0;
         var offset = 10;
+        var position = config.steps[currStep].position || config.defaultPosition;
 
-        if (ref.style.position !== 'absolute') {
+        if (ref.style.position === '') {
             ref.style.position = 'relative';
         }
 
-        if (steps[currStep].position === 'right') {
+        if (position === 'right') {
+            left = (refRect.width + offset);
 
-            left = (ref.offsetLeft + ref.offsetWidth + offset);
-            top = ref.offsetTop;
+        } else if (position === 'left') {
+            left = (box.offsetWidth + offset) * -1;
 
-        } else if (steps[currStep].position === 'left') {
+        } else if (position === 'top') {
+            top = (box.offsetHeight + offset) * -1;
 
-            left = (ref.offsetLeft - box.offsetWidth - offset);
-            top = ref.offsetTop;
-
-        } else if (steps[currStep].position === 'top') {
-
-            left = ref.offsetLeft;
-            top = ref.offsetTop - (box.offsetHeight + offset);
-
-        } else if (steps[currStep].position === 'bottom') {
-
-            left = ref.offsetLeft;
-            top = ref.offsetTop + ref.offsetHeight + offset;
+        } else if (position === 'bottom') {
+            top = refRect.height + offset;
         }
 
         box.style.left = left + 'px';
         box.style.top = top + 'px';
 
-        box.style.zIndex = 991;
-        ref.style.zIndex = 991;
-
-        document.body.scrollTop = ref.offsetTop;
+        cacheZIndex = ref.style.zIndex;
+        ref.style.zIndex = config.zIndex;
+        box.style.zIndex = config.zIndex;
+        document.body.scrollTop = refRect.top;
     }
 
     function removeStep() {
-        if (steps[currStep].ref.style.position !== 'absolute') {
-            steps[currStep].ref.style.position = 'initial';
-        }
-
-        steps[currStep].ref.style.zIndex = '';
+        config.steps[currStep].ref.style.zIndex = cacheZIndex;
 
         box.parentNode.removeChild(box);
     }
@@ -293,7 +250,7 @@ var Tour = (function () {
     }
 
     function nextStep() {
-        if (currStep < steps.length - 1) {
+        if (currStep < config.steps.length - 1) {
             removeStep();
 
             currStep++;
@@ -303,14 +260,14 @@ var Tour = (function () {
 
     function closeTour() {
         removeStep();
-        removeOverlay();
-        steps = [];
+        removeBackdrop();
+        config.steps = [];
         currStep = 0;
     }
 
     return {
         init: init,
-        next: nextStep(),
-        back: backStep()
+        next: nextStep,
+        back: backStep
     }
 })();

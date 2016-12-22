@@ -22,42 +22,44 @@
 </style>
 <body>
 
-<div id="first" class="box" data-step="1"
+<div id="step-1" class="box" data-step="1" data-position="bottom" style="position: fixed; left: 500px; top: 500px"
      data-message="Com tour.js você é capaz de criar um guia pela sua solução web de maneira muito simples.">
-    Primeiro passo
+    1º step
 </div>
-<div id="second" class="box" data-step="2" data-message="Além de ser possível inserir imagens para facilitar o tour"
+<div id="step-2" class="box" data-step="2" data-message="Além de ser possível inserir imagens para facilitar o tour"
      data-image="resource/image-1.jpg">
-    Segundo passo
+    2º step
 </div>
-<div id="third" class="box" data-step="3"
+<div id="step-3" class="box" data-step="3"
      data-message="Ou até mesmo video, o que facilita a explicação de coisas mais complexas"
      data-video="resource/video-1.mp4">
-    Terceiro passo
+    3º step
 </div>
 
-<div id="fourth" class="box" data-step="4"
+<div id="step-4" class="box" data-step="4"
      data-message="Com data-position no elemento é possível posicionar a mensagem em diferentes posições"
      data-position="bottom" style="position: absolute; left: 300px; top: 300px">
-    Quarto passo
+    4º step
 </div>
 
-<div id="sixth" class="box" style="position: absolute; left: 1000px; top: 500px">
-    Quarto passo
+<div id="step-5" class="box" style="position: absolute; left: 1000px; top: 100px">
+    5º passo
 </div>
 
 <script src="tour/tour.js"></script>
 
 <script>
     window.onload = function () {
-        Tour.init([
-            {
-                step: 5,
-                message: '<strong>Etapa 5</strong> - Aenean placerat. In vulputate urna eu arcu. Aliquam erat volutpat. Suspendisse potenti. Morbi mattis felis at nunc. Duis viverra diam non justo. In nisl. Nullam sit amet magna in magna gravida vehicula. Mauris tincidunt sem sed arcu. Nunc posuere. Nullam lectus justo,',
-                ref: '#sixth',
-                color: 'black'
-            }
-        ]);
+        Tour.init({
+            steps: [
+                {
+                    step: 5,
+                    message: '<strong>Etapa 5</strong> - Aenean placerat. In vulputate urna eu arcu. Aliquam erat volutpat. Suspendisse potenti. Morbi mattis felis at nunc. Duis viverra diam non justo. In nisl. Nullam sit amet magna in magna gravida vehicula. Mauris tincidunt sem sed arcu. Nunc posuere. Nullam lectus justo,',
+                    ref: '#step-5',
+                    color: 'black'
+                }
+            ]
+        });
     }
 </script>
 
